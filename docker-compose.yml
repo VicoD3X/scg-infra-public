@@ -1,0 +1,21 @@
+services:
+  node:
+    build:
+      context: .
+    environment:
+      SCG_BIND: 0.0.0.0:8080
+      SCG_DATA_DIR: /var/lib/scg
+      SCG_REALM: live
+      RUST_LOG: scg_node=info,scg_api=info,tower_http=info
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - scg-data:/var/lib/scg
+    init: true
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
+volumes:
+  scg-data:

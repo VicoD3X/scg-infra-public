@@ -1,6 +1,10 @@
-/target
-/var
+/target/
+/.idea/
+/.vscode/
 *.db
 *.db-shm
 *.db-wal
+*.log
 .env
+.DS_Store
+

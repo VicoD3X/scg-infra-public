@@ -1,0 +1,8 @@
+.git
+.github
+target
+var
+*.db
+*.db-shm
+*.db-wal
+

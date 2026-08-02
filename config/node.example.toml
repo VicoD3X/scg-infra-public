@@ -1,0 +1,5 @@
+bind = "127.0.0.1:8080"
+data_dir = "./var/scg"
+realm = "live"
+event_retention = 1000
+snapshot_retention = 20
