@@ -17,7 +17,7 @@ publish = false
 axum = { version = "0.8", features = ["json", "macros"] }
 chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
 http-body-util = "0.1"
-rusqlite = { version = "0.37", features = ["bundled"] }
+rusqlite = { version = "0.40", features = ["bundled"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.10"
