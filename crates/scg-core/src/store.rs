@@ -208,13 +208,15 @@ impl SqliteStore {
         transaction.execute(
             "INSERT INTO events (sequence, revision, kind, payload_json, occurred_at)
              VALUES (?1, ?2, ?3, ?4, ?5)",
-            params![sequence, revision, operation, serde_json::to_string(&state)?, committed_at],
+            params![
+                sequence,
+                revision,
+                operation,
+                serde_json::to_string(&state)?,
+                committed_at
+            ],
         )?;
-        trim_history(
-            &transaction,
-            self.snapshot_retention,
-            self.event_retention,
-        )?;
+        trim_history(&transaction, self.snapshot_retention, self.event_retention)?;
         transaction.commit()?;
 
         Ok(StoredCommit {
@@ -247,7 +249,13 @@ impl SqliteStore {
         transaction.execute(
             "INSERT INTO events (sequence, revision, kind, payload_json, occurred_at)
              VALUES (?1, ?2, ?3, ?4, ?5)",
-            params![sequence, revision, kind, serde_json::to_string(&payload)?, occurred_at],
+            params![
+                sequence,
+                revision,
+                kind,
+                serde_json::to_string(&payload)?,
+                occurred_at
+            ],
         )?;
         trim_history(&transaction, self.snapshot_retention, self.event_retention)?;
         transaction.commit()?;
@@ -310,13 +318,19 @@ fn load_latest(connection: &Connection) -> CoreResult<Option<StoredSnapshot>> {
 
 fn latest_revision_in_transaction(transaction: &Transaction<'_>) -> CoreResult<u64> {
     transaction
-        .query_row("SELECT COALESCE(MAX(revision), 0) FROM snapshots", [], |row| row.get(0))
+        .query_row(
+            "SELECT COALESCE(MAX(revision), 0) FROM snapshots",
+            [],
+            |row| row.get(0),
+        )
         .map_err(Into::into)
 }
 
 fn latest_sequence_in_transaction(transaction: &Transaction<'_>) -> CoreResult<u64> {
     transaction
-        .query_row("SELECT COALESCE(MAX(sequence), 0) FROM events", [], |row| row.get(0))
+        .query_row("SELECT COALESCE(MAX(sequence), 0) FROM events", [], |row| {
+            row.get(0)
+        })
         .map_err(Into::into)
 }
 
@@ -368,7 +382,9 @@ mod tests {
         let path = directory.path().join("node.db");
         let store = SqliteStore::open(&path, RealmId::Live, 4, 8).unwrap();
 
-        let first = store.commit_state(0, "state.updated", json!({"value": 1})).unwrap();
+        let first = store
+            .commit_state(0, "state.updated", json!({"value": 1}))
+            .unwrap();
         assert_eq!(first.snapshot.revision, 1);
         assert!(matches!(
             store.commit_state(0, "state.updated", json!({"value": 2})),
@@ -383,12 +399,7 @@ mod tests {
         let path = directory.path().join("node.db");
         SqliteStore::open(&path, RealmId::Live, 4, 8).unwrap();
 
-        let result = SqliteStore::open(
-            &path,
-            RealmId::Lab("scenario-a".to_owned()),
-            4,
-            8,
-        );
+        let result = SqliteStore::open(&path, RealmId::Lab("scenario-a".to_owned()), 4, 8);
         assert!(matches!(result, Err(CoreError::RealmMismatch { .. })));
     }
 }

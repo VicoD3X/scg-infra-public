@@ -75,9 +75,8 @@ async fn commit(
 async fn events(
     State(state): State<ApiState>,
 ) -> Sse<impl tokio_stream::Stream<Item = Result<Event, Infallible>>> {
-    let stream = BroadcastStream::new(state.runtime.subscribe()).filter_map(|result| {
-        result.ok().and_then(to_sse_event).map(Ok)
-    });
+    let stream = BroadcastStream::new(state.runtime.subscribe())
+        .filter_map(|result| result.ok().and_then(to_sse_event).map(Ok));
     Sse::new(stream).keep_alive(
         KeepAlive::new()
             .interval(Duration::from_secs(15))
@@ -115,14 +114,12 @@ impl IntoResponse for ApiError {
             CoreError::InvalidTransition { .. } => (StatusCode::CONFLICT, "invalid_transition"),
             CoreError::InvalidRealm(_)
             | CoreError::InvalidServiceGraph(_)
-            | CoreError::InvalidOperation(_) => {
-                (StatusCode::BAD_REQUEST, "invalid_request")
-            }
+            | CoreError::InvalidOperation(_) => (StatusCode::BAD_REQUEST, "invalid_request"),
             CoreError::RealmMismatch { .. } => (StatusCode::CONFLICT, "realm_mismatch"),
             CoreError::ChecksumMismatch => (StatusCode::SERVICE_UNAVAILABLE, "integrity_failure"),
-            CoreError::LockPoisoned
-            | CoreError::Storage(_)
-            | CoreError::Serialization(_) => (StatusCode::INTERNAL_SERVER_ERROR, "internal_error"),
+            CoreError::LockPoisoned | CoreError::Storage(_) | CoreError::Serialization(_) => {
+                (StatusCode::INTERNAL_SERVER_ERROR, "internal_error")
+            }
         };
         (
             status,
@@ -164,7 +161,12 @@ mod tests {
 
         let health = app
             .clone()
-            .oneshot(Request::builder().uri("/healthz").body(Body::empty()).unwrap())
+            .oneshot(
+                Request::builder()
+                    .uri("/healthz")
+                    .body(Body::empty())
+                    .unwrap(),
+            )
             .await
             .unwrap();
         assert_eq!(health.status(), StatusCode::OK);

@@ -154,7 +154,11 @@ impl Runtime {
 
         state.phase = RuntimePhase::Stopping;
         for service in self.graph.stop_order() {
-            if let Some(snapshot) = state.services.iter_mut().find(|value| value.id == service.id) {
+            if let Some(snapshot) = state
+                .services
+                .iter_mut()
+                .find(|value| value.id == service.id)
+            {
                 snapshot.status = ServiceStatus::Stopped;
             }
         }
@@ -162,9 +166,9 @@ impl Runtime {
         state.clean_shutdown = true;
         self.store
             .mark_checkpoint(RuntimePhase::Stopped, state.revision, true)?;
-        let event = self
-            .store
-            .append_event(state.revision, "runtime.stopped", json!({"clean": true}))?;
+        let event =
+            self.store
+                .append_event(state.revision, "runtime.stopped", json!({"clean": true}))?;
         self.publish(event);
 
         Ok(self.snapshot_from(&state))

@@ -72,4 +72,3 @@ impl NodeConfig {
 fn env_usize(name: &str) -> Option<usize> {
     env::var(name).ok()?.parse().ok()
 }
-
