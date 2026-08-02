@@ -39,4 +39,3 @@ fn realm_identity_is_checked_before_runtime_start() {
     ));
     assert!(matches!(result, Err(CoreError::RealmMismatch { .. })));
 }
-

@@ -45,9 +45,7 @@ impl FromStr for RealmId {
         let valid = !id.is_empty()
             && id.len() <= 32
             && id.chars().all(|character| {
-                character.is_ascii_lowercase()
-                    || character.is_ascii_digit()
-                    || character == '-'
+                character.is_ascii_lowercase() || character.is_ascii_digit() || character == '-'
             });
         if !valid {
             return Err(CoreError::InvalidRealm(
