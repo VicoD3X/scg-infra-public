@@ -2,7 +2,7 @@
 
 # SCG Infrastructure
 
-**A supervised Rust node for revisioned state, ordered events, and isolated runtime environments.**
+**A supervised Rust control-plane node for revisioned state, ordered events, and isolated runtime environments.**
 
 [![CI](https://img.shields.io/github/actions/workflow/status/VicoD3X/scg-infra-public/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/VicoD3X/scg-infra-public/actions/workflows/ci.yml)
 ![Rust 1.85](https://img.shields.io/badge/Rust-1.85-000000?style=flat-square&logo=rust&logoColor=white)
@@ -10,9 +10,11 @@
 ![SQLite](https://img.shields.io/badge/SQLite-WAL-044A64?style=flat-square&logo=sqlite&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white)
 
+[Architecture](#architecture) · [Run](#run-the-node) · [HTTP contract](#http-contract) · [Configuration](#configuration) · [Security](SECURITY.md)
+
 </div>
 
-SCG is based on the control-plane design of a production system. This public implementation uses synthetic state and neutral service boundaries.
+SCG rebuilds the control-plane architecture of a system running in production as a standalone Rust service. Operational data is replaced with deterministic test state; the runtime model, failure handling, and isolation rules remain intact.
 
 The node exposes a compact HTTP contract over a supervised runtime. It keeps authoritative state in SQLite, emits ordered events over SSE, rejects stale writes, and separates live workloads from test scenarios at the storage boundary.
 
